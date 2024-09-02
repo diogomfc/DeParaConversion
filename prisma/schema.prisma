@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model DePara {
+  id          Int      @id @default(autoincrement())
+  fileName    String?
+  arquivoCSV  Json? // Armazena os dados do CSV em formato JSON
+  description String?
+  status      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  observacoes String?
+
+  generationDDL   DDLGeneration?
+  generationDDLId Int?
+
+  @@index([status])
+  @@index([generationDDLId])
+  @@map("de_para")
+}
+
+model DDLGeneration {
+  id          Int     @id @default(autoincrement())
+  version     String?
+  fileName    String?
+  data        Json? // Armazena os dados do CSV em formato JSON
+  description String?
+
+  generatedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  dePara   DePara @relation(fields: [deParaId], references: [id], onDelete: Cascade)
+  deParaId Int    @unique
+
+  @@index([deParaId])
+  @@index([fileName])
+  @@index([version])
+  @@map("ddl_generation")
+}
