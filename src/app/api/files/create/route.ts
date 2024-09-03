@@ -4,11 +4,13 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   const { arquivoCSV, fileName, description, status } = await request.json();
 
-   // Adiciona o sufixo "_Sis" ao nome do arquivo
-   const fileNameWithSuffix = `${fileName
-    .replace(/^[A-Z]/, "M")  // Altera a primeira letra para "M"
-    .replace(/\.[^/.]+$/, "")}_Sis.csv`; // Adiciona o sufixo "_Sis" e mantém a extensão .csv
+  // Define o sufixo com base no status
+  const suffix = status === "Atenção" ? "_Lab.csv" : "_Sis.csv";
 
+  // Adiciona o sufixo correto ao nome do arquivo
+  const fileNameWithSuffix = `${fileName
+    .replace(/^[A-Z]/, "M") // Altera a primeira letra para "M"
+    .replace(/\.[^/.]+$/, "")}${suffix}`; // Adiciona o sufixo e mantém a extensão .csv
 
   try {
     // Verifica se já existe um registro com o mesmo fileName
@@ -41,6 +43,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Erro ao salvar os dados' }, { status: 500 });
   }
 }
+
 
 
 

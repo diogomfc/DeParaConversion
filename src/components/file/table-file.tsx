@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Checkbox } from "../ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { DownloadIcon, Flame, MoreVerticalIcon, PencilIcon, Rocket, TrashIcon } from "lucide-react";
+import { AlertCircle, DownloadIcon, Flame, MoreVerticalIcon, PencilIcon, Rocket, TrashIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { formatDate } from "@/utils/dateUtils";
 import { FileRecord } from ".";
@@ -50,7 +50,11 @@ export function TableFile({ files, selectedFiles, onSelectFile, onSelectAll, onD
             </TableCell>
             <TableCell>
               <div className="flex items-center">
-                <Rocket className="mr-2 h-4 w-4" />
+                {file.status === "Conferido" ? (
+                  <Rocket className="mr-2 h-4 w-4 text-green-500" />
+                ) : file.status === "Atenção" ? (
+                  <AlertCircle className="mr-2 h-4 w-4 text-yellow-500" />
+                ) : null}
                 {file.status}
               </div>
             </TableCell>

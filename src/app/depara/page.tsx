@@ -1,7 +1,6 @@
 "use client"
 
 import { TableFileHome } from "@/components/file";
-import { TableFile } from "@/components/file/table-file";
 import UploaderFile from "@/components/file/uploader-file";
 
 export default function NewPageDepara() {
