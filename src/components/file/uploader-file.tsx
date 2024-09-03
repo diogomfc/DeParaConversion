@@ -8,6 +8,7 @@ import { UploadIcon, XIcon, PlusIcon } from "lucide-react";
 
 import { Dialog } from "@/components/ui/dialog";
 import { ModalListFile } from "./modal-list-file";
+import axios from "axios";
 
 interface DataRow {
   PK: string;
@@ -18,7 +19,6 @@ interface DataRow {
   Tam: string;
 }
 
-// Componente para fazer upload de arquivos
 export default function UploaderFile() {
   const [files, setFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<Record<string, number>>({});
@@ -26,6 +26,7 @@ export default function UploaderFile() {
   const [isUploading, setIsUploading] = useState(false);
 
   const queryClient = useQueryClient();
+  const [uploadComplete, setUploadComplete] = useState(false);
 
   const mutation = useMutation({
     mutationFn: async (file: File) => {
@@ -38,23 +39,23 @@ export default function UploaderFile() {
       });
 
       // Processar os dados CSV e obter o status
-      const { processedData, status } = processCSV(parsedData);
-
-      // Simular atraso para o processamento dos arquivos
-      //await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { processedData, status } = await processCSV(parsedData);
 
       // Fazer o upload dos dados e salvar no banco de dados
-      const response = await fetch("/api/files/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ arquivoCSV: processedData, fileName: file.name, description: 'Descrição opcional', status }),
+      const response = await axios.post("/api/files/create", {
+        files: [{
+          arquivoCSV: processedData,
+          fileName: file.name,
+          description: 'Descrição opcional',
+          status
+        }]
       });
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Erro ao salvar os dados.");
       }
 
-      return await response.json();
+      return response.data;
     },
     onMutate: (file) => {
       setProgress((prev) => ({ ...prev, [file.name]: 0 }));
@@ -62,45 +63,37 @@ export default function UploaderFile() {
     },
     onSuccess: (data, file) => {
       setProgress((prev) => ({ ...prev, [file.name]: 100 }));
-      queryClient.invalidateQueries({ queryKey: ["files"] });
-      setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
-      if (files.length === 1) {
-        setIsModalOpen(false);
-      }
     },
     onError: () => {
       setIsUploading(false);
     },
     onSettled: () => {
-      setIsUploading(false);
+      // Se todos os arquivos foram processados
+      if (files.length === 0) {
+        setIsUploading(false);
+        setUploadComplete(true);
+      }
     },
   });
 
-
-  // Função para fazer o upload dos arquivos
-  const processCSV = (data: DataRow[]): { processedData: DataRow[], tamTotalDCL: number, sumTamC: number, status: string } => {
+  // Função para processar o CSV com async/await
+  const processCSV = async (data: DataRow[]): Promise<{ processedData: DataRow[], tamTotalDCL: number, sumTamC: number, status: string }> => {
     let nivValorPK = "";
     let tamTotalDCL = 0;
     let sumTamC = 0;
 
-    // Processar dados para identificar valores e alterar TpConv
+    // Loop único para processar dados e calcular tamTotalDCL
     data.forEach((row) => {
       if (row.PK === "PK") {
         nivValorPK = row.Niv;
       }
+
       if (row.TpConv === "DCL") {
         tamTotalDCL += parseFloat(row.Tam) || 0;
       }
     });
 
-    // Limpar valores de TpConv exceto "DCL"
-    data.forEach((row) => {
-      if (row.TpConv !== "DCL") {
-        row.TpConv = "";
-      }
-    });
-
-    // Alterar valores de TpConv e calcular soma de Tam para "C"
+    // Loop para atualizar TpConv e calcular sumTamC
     data.forEach((row) => {
       if (row.Niv === "#") {
         row.TpConv = "";
@@ -108,10 +101,11 @@ export default function UploaderFile() {
         row.TpConv = "N";
       } else if (row.Niv === nivValorPK && row.TpConv !== "N") {
         row.TpConv = "C";
-      } else if (row.TpConv === "" && row.Gru !== "G" && row.Niv !== nivValorPK) {
+      } else if (row.TpConv === "") {
         row.TpConv = "N";
       }
 
+      // Calcular a soma de Tam para "C"
       if (row.TpConv === "C") {
         sumTamC += parseFloat(row.Tam) || 0;
       }
@@ -133,7 +127,6 @@ export default function UploaderFile() {
     });
   };
 
-  // Função para remover um arquivo da lista
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
     multiple: true,
@@ -144,8 +137,20 @@ export default function UploaderFile() {
   });
 
   const handleUpload = async () => {
-    for (const file of files) {
-      await mutation.mutateAsync(file);
+    setIsUploading(true);
+    setUploadComplete(false);
+
+    try {
+      // Use Promise.all para garantir que todos os arquivos sejam processados
+      await Promise.all(files.map(file => mutation.mutateAsync(file)));
+
+      // Atualize a lista após todos os arquivos serem processados
+      queryClient.invalidateQueries({ queryKey: ["files"] });
+      setFiles([]);
+    } catch (error) {
+      console.error('Erro ao fazer upload dos arquivos:', error);
+    } finally {
+      setIsModalOpen(false);
     }
   };
 
@@ -164,8 +169,7 @@ export default function UploaderFile() {
         <div className="flex-1">
           <div
             {...getRootProps({
-              className: `border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer ${isUploading ? "pointer-events-none" : ""
-                }`,
+              className: `border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer ${isUploading ? "pointer-events-none" : ""}`,
             })}
           >
             <input {...getInputProps()} />
@@ -195,3 +199,4 @@ export default function UploaderFile() {
     </div>
   );
 }
+

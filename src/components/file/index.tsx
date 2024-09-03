@@ -47,49 +47,6 @@ export function TableFileHome() {
     });
   };
 
-  //TODO: Verificar se o arquivo é único ou múltiplo
-  // const handleDelete = () => {
-  //   console.log("Arquivo selecionado para exclusão:", selectedFiles);
-  //   if (selectedFiles.length === 1) {
-  //     deleteFileMutation.mutate(selectedFiles[0], {
-  //       onSuccess: () => {
-  //         console.log("Arquivo excluído com sucesso.");
-  //         toast({
-  //           title: "Sucesso!",
-  //           description: "Arquivo excluído com sucesso.",
-  //         });
-  //       },
-  //       onError: (error) => {
-  //         console.error("Erro ao excluir o arquivo:", error);
-  //         toast({
-  //           title: "Erro",
-  //           description: "Ocorreu um problema ao excluir o arquivo.",
-  //         });
-  //       },
-  //     });
-  //   } else if (selectedFiles.length > 1) {
-  //     deleteFilesMutation.mutate(selectedFiles, {
-  //       onSuccess: () => {
-  //         console.log("Arquivos excluídos com sucesso.");
-  //         toast({
-  //           title: "Sucesso!",
-  //           description: `${selectedFiles.length} arquivos excluídos com sucesso.`,
-  //         });
-  //       },
-  //       onError: (error) => {
-  //         console.error("Erro ao excluir arquivos:", error);
-  //         toast({
-  //           title: "Erro",
-  //           description: "Ocorreu um problema ao excluir os arquivos.",
-  //         });
-  //       },
-  //     });
-  //   }
-  //   setSelectedFiles([]);
-  // };
-
-
-
   const handleDownloadFiles = async (ids: string[]) => {
     try {
       if (ids.length === 1) {
