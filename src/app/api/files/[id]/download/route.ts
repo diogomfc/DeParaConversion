@@ -92,6 +92,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 //   [key: string]: string | number;
 // };
 
+
 // export async function GET(request: Request, { params }: { params: { ids: string[] } }) {
 //   const { ids } = params;
 

@@ -11,9 +11,9 @@ export async function GET(request: Request) {
         status: true,
         createdAt: true,  
       },
-      orderBy: {
-        createdAt: 'desc',  
-      },
+      // orderBy: {
+      //   createdAt: 'desc',  
+      // },
     });
 
     // Retorna a lista de arquivos

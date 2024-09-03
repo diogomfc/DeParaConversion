@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDropzone } from "react-dropzone";
@@ -10,7 +9,6 @@ import { UploadIcon, XIcon, PlusIcon } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { ModalListFile } from "./modal-list-file";
 
-
 interface DataRow {
   PK: string;
   Niv: string;
@@ -20,6 +18,7 @@ interface DataRow {
   Tam: string;
 }
 
+// Componente para fazer upload de arquivos
 export default function UploaderFile() {
   const [files, setFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<Record<string, number>>({});
@@ -27,6 +26,55 @@ export default function UploaderFile() {
   const [isUploading, setIsUploading] = useState(false);
 
   const queryClient = useQueryClient();
+
+  // função de mutação para fazer o upload dos arquivos
+  // const mutation = useMutation({
+  //   mutationFn: async (file: File) => {
+  //     const parsedData = await new Promise<DataRow[]>((resolve, reject) => {
+  //       Papa.parse<DataRow>(file, {
+  //         header: true,
+  //         complete: (result) => resolve(result.data),
+  //         error: (error) => reject(error),
+  //       });
+  //     });
+
+  //     const processedData = processCSV(parsedData);
+
+  //     // Simular atraso para o processamento dos arquivos
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  //     // Fazer o upload dos dados e salvar no banco de dados
+  //     const response = await fetch("/api/files/create", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ arquivoCSV: processedData, fileName: file.name }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error("Erro ao salvar os dados.");
+  //     }
+
+  //     return await response.json();
+  //   },
+  //   onMutate: (file) => {
+  //     setProgress((prev) => ({ ...prev, [file.name]: 0 }));
+  //     setIsUploading(true);
+  //   },
+  //   onSuccess: (data, file) => {
+  //     setProgress((prev) => ({ ...prev, [file.name]: 100 }));
+  //     queryClient.invalidateQueries({ queryKey: ["files"] });
+  //     setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+  //     if (files.length === 1) {
+  //       setIsModalOpen(false);
+  //     }
+  //   },
+  //   onError: () => {
+  //     setIsUploading(false);
+  //   },
+  //   onSettled: () => {
+  //     setIsUploading(false);
+  //   },
+  // });
 
   const mutation = useMutation({
     mutationFn: async (file: File) => {
@@ -38,15 +86,17 @@ export default function UploaderFile() {
         });
       });
 
-      const processedData = processCSV(parsedData);
+      // Processar os dados CSV e obter o status
+      const { processedData, status } = processCSV(parsedData);
 
       // Simular atraso para o processamento dos arquivos
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      //await new Promise((resolve) => setTimeout(resolve, 1000));
 
+      // Fazer o upload dos dados e salvar no banco de dados
       const response = await fetch("/api/files/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ arquivoCSV: processedData, fileName: file.name }),
+        body: JSON.stringify({ arquivoCSV: processedData, fileName: file.name, description: 'Descrição opcional', status }),
       });
 
       if (!response.ok) {
@@ -75,8 +125,55 @@ export default function UploaderFile() {
     },
   });
 
+
   //TODO: Processo de conversão dos campos da csv
-  const processCSV = (data: DataRow[]): { processedData: DataRow[], tamTotalDCL: number, sumTamC: number } => {
+  // Função para processar os dados da CSV
+  // const processCSV = (data: DataRow[]): { processedData: DataRow[], tamTotalDCL: number, sumTamC: number, status: string } => {
+  //   let nivValorPK = "";
+  //   let tamTotalDCL = 0;
+  //   let sumTamC = 0;
+
+  //   // Processar dados para identificar valores e alterar TpConv
+  //   data.forEach((row) => {
+  //     if (row.PK === "PK") {
+  //       nivValorPK = row.Niv;
+  //     }
+  //     if (row.TpConv === "DCL") {
+  //       tamTotalDCL += parseFloat(row.Tam) || 0;
+  //     }
+  //   });
+
+  //   // Limpar valores de TpConv exceto "DCL"
+  //   data.forEach((row) => {
+  //     if (row.TpConv !== "DCL") {
+  //       row.TpConv = "";
+  //     }
+  //   });
+
+  //   // Alterar valores de TpConv e calcular soma de Tam para "C"
+  //   data.forEach((row) => {
+  //     if (row.Niv === "#") {
+  //       row.TpConv = "";
+  //     } else if (row.Gru === "G" && row.Redef) {
+  //       row.TpConv = "N";
+  //     } else if (row.Niv === nivValorPK && row.TpConv !== "N") {
+  //       row.TpConv = "C";
+  //     } else if (row.TpConv !== "DCL") {
+  //       row.TpConv = "N";
+  //     }
+
+  //     if (row.TpConv === "C") {
+  //       sumTamC += parseFloat(row.Tam) || 0;
+  //     }
+  //   });
+
+  //   // Determinar o status
+  //   const status = tamTotalDCL !== sumTamC ? "Atenção" : "Confirmado";
+
+  //   return { processedData: data, tamTotalDCL, sumTamC, status };
+  // };
+
+  const processCSV = (data: DataRow[]): { processedData: DataRow[], tamTotalDCL: number, sumTamC: number, status: string } => {
     let nivValorPK = "";
     let tamTotalDCL = 0;
     let sumTamC = 0;
@@ -91,6 +188,13 @@ export default function UploaderFile() {
       }
     });
 
+    // Limpar valores de TpConv exceto "DCL"
+    data.forEach((row) => {
+      if (row.TpConv !== "DCL") {
+        row.TpConv = "";
+      }
+    });
+
     // Alterar valores de TpConv e calcular soma de Tam para "C"
     data.forEach((row) => {
       if (row.Niv === "#") {
@@ -99,7 +203,7 @@ export default function UploaderFile() {
         row.TpConv = "N";
       } else if (row.Niv === nivValorPK && row.TpConv !== "N") {
         row.TpConv = "C";
-      } else if (row.TpConv !== "DCL") {
+      } else if (row.TpConv === "" && row.Gru !== "G") {
         row.TpConv = "N";
       }
 
@@ -108,9 +212,13 @@ export default function UploaderFile() {
       }
     });
 
-    return { processedData: data, tamTotalDCL, sumTamC };
+    // Determinar o status com base em tamTotalDCL e sumTamC
+    const status = tamTotalDCL !== sumTamC ? "Atenção" : "OK";
+
+    return { processedData: data, tamTotalDCL, sumTamC, status };
   };
 
+  // Função para fazer o upload dos arquivos
   const onDrop = (acceptedFiles: File[]) => {
     setFiles((prevFiles) => {
       const newFiles = [...prevFiles, ...acceptedFiles];
@@ -121,6 +229,7 @@ export default function UploaderFile() {
     });
   };
 
+  // Função para remover um arquivo da lista
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
     multiple: true,

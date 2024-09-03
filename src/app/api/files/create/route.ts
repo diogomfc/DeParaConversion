@@ -2,13 +2,13 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const { arquivoCSV, fileName, description } = await request.json();
+  const { arquivoCSV, fileName, description, status } = await request.json();
 
    // Adiciona o sufixo "_Sis" ao nome do arquivo
    const fileNameWithSuffix = `${fileName
     .replace(/^[A-Z]/, "M")  // Altera a primeira letra para "M"
     .replace(/\.[^/.]+$/, "")}_Sis.csv`; // Adiciona o sufixo "_Sis" e mantém a extensão .csv
-  
+
 
   try {
     // Verifica se já existe um registro com o mesmo fileName
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         fileName: fileNameWithSuffix,
         arquivoCSV,
         description,
-        status: 'PENDING' // Certifique-se de que 'PENDING' é um status válido no seu sistema
+        status,
       },
     });
 

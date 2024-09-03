@@ -27,7 +27,7 @@ type FileRecord = {
 export function TableFile() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
-  const recordsPerPage = 20;
+  const recordsPerPage = 10;
 
   const fetchFiles = async (): Promise<FileRecord[]> => {
     const response = await fetch("/api/files/list");
