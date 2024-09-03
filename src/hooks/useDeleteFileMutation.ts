@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const deleteFile = async (id: string): Promise<void> => {
-  const response = await fetch(`/api/files/${id}/delete`, {
+ const response = await fetch(`/api/files/${id}/delete`, {
     method: 'DELETE',
   });
 

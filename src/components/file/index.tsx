@@ -6,6 +6,8 @@ import { useDownloadZip } from '@/hooks/useDownloadZip'; // Hook para download e
 import { Button } from '../ui/button';
 import { TableFile } from './table-file';
 import { Pagination } from './pagination';
+import { useToast } from '@/hooks/use-toast';
+import { useDeleteFilesMutation } from '@/hooks/useDeleteFilesMutation';
 
 // Tipo para o arquivo
 export type FileRecord = {
@@ -18,8 +20,10 @@ export type FileRecord = {
 };
 
 export function TableFileHome() {
+  const { toast } = useToast()
   const { data: files = [], isLoading, isError, error } = useFetchFiles();
   const deleteFileMutation = useDeleteFileMutation();
+  const deleteFilesMutation = useDeleteFilesMutation(); // Hook para deletar múltiplos arquivos
   const { handleDownload: handleDownloadZip } = useDownloadZip(files);
   const { handleDownload: handleDownloadIndividual } = useDownloadFiles(files);
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,7 +40,55 @@ export function TableFileHome() {
 
   const handleDelete = (id: string) => {
     deleteFileMutation.mutate(id);
+
+    toast({
+      title: "Sucesso!",
+      description: "Arquivo excluído com sucesso.",
+    });
   };
+
+  //TODO: Verificar se o arquivo é único ou múltiplo
+  // const handleDelete = () => {
+  //   console.log("Arquivo selecionado para exclusão:", selectedFiles);
+  //   if (selectedFiles.length === 1) {
+  //     deleteFileMutation.mutate(selectedFiles[0], {
+  //       onSuccess: () => {
+  //         console.log("Arquivo excluído com sucesso.");
+  //         toast({
+  //           title: "Sucesso!",
+  //           description: "Arquivo excluído com sucesso.",
+  //         });
+  //       },
+  //       onError: (error) => {
+  //         console.error("Erro ao excluir o arquivo:", error);
+  //         toast({
+  //           title: "Erro",
+  //           description: "Ocorreu um problema ao excluir o arquivo.",
+  //         });
+  //       },
+  //     });
+  //   } else if (selectedFiles.length > 1) {
+  //     deleteFilesMutation.mutate(selectedFiles, {
+  //       onSuccess: () => {
+  //         console.log("Arquivos excluídos com sucesso.");
+  //         toast({
+  //           title: "Sucesso!",
+  //           description: `${selectedFiles.length} arquivos excluídos com sucesso.`,
+  //         });
+  //       },
+  //       onError: (error) => {
+  //         console.error("Erro ao excluir arquivos:", error);
+  //         toast({
+  //           title: "Erro",
+  //           description: "Ocorreu um problema ao excluir os arquivos.",
+  //         });
+  //       },
+  //     });
+  //   }
+  //   setSelectedFiles([]);
+  // };
+
+
 
   const handleDownloadFiles = async (ids: string[]) => {
     try {
@@ -45,8 +97,20 @@ export function TableFileHome() {
       } else if (ids.length > 1) {
         await handleDownloadZip(ids); // Download em ZIP
       }
+
+      toast({
+        title: "Download Concluído",
+        description: `${ids.length} arquivos foram baixados com sucesso.`,
+      });
+
     } catch (error) {
       console.error("Erro ao fazer o download dos arquivos:", error);
+
+      // Exibir toast para erro
+      toast({
+        title: "Erro",
+        description: "Ocorreu um problema ao fazer o download dos arquivos.",
+      });
     }
   };
 

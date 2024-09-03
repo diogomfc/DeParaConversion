@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { XIcon, PlusIcon } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-
 import {
   DialogContent,
   DialogFooter,
@@ -13,13 +12,14 @@ import {
 } from "../ui/dialog";
 import { ModalItemListFile } from "./modal-item-list-file";
 import { Separator } from "../ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 interface FileListProps {
   files: File[];
   progress: Record<string, number>;
   onRemoveFile: (index: number) => void;
   onClearSelection: () => void;
-  onUpload: (file: File) => Promise<void>; // A função de upload agora deve aceitar um arquivo específico
+  onUpload: (file: File) => Promise<void>;
   isUploading: boolean;
   openFileDialog: () => void;
 }
@@ -33,10 +33,8 @@ export function ModalListFile({
   isUploading,
   openFileDialog,
 }: FileListProps) {
-
-  const [uploadingFileIndex, setUploadingFileIndex] = useState<number | null>(
-    null
-  );
+  const [uploadingFileIndex, setUploadingFileIndex] = useState<number | null>(null);
+  const { toast } = useToast(); // Uso do hook useToast
 
   const handleUpload = async () => {
     for (let i = 0; i < files.length; i++) {
@@ -49,6 +47,12 @@ export function ModalListFile({
       }
     }
     setUploadingFileIndex(null);
+
+    // Exibir toast após concluir o upload de todos os arquivos
+    toast({
+      title: "Upload Concluído",
+      description: `${files.length} arquivos foram cadastrados e convertidos com sucesso.`,
+    });
   };
 
   return (
@@ -56,12 +60,11 @@ export function ModalListFile({
       <DialogHeader className="sticky top-0 bg-white z-10">
         <div className="flex items-center justify-between">
           <DialogTitle>
-            <h1> Arquivos Selecionados</h1>
+            <h1>Arquivos Selecionados</h1>
             <p className="text-sm font-normal text-gray-500">
               Total de arquivos: <span className="text-blue-900">{files.length}</span>
             </p>
           </DialogTitle>
-
 
           <Button
             variant="ghost"
@@ -106,4 +109,4 @@ export function ModalListFile({
       </DialogFooter>
     </DialogContent>
   );
-};
+}

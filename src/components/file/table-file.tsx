@@ -76,7 +76,10 @@ export function TableFile({ files, selectedFiles, onSelectFile, onSelectAll, onD
               </Button>
             </TableCell>
             <TableCell>
-              <Button variant="ghost" size="icon" onClick={() => onDelete(file.id)}>
+              <Button variant="ghost" size="icon" onClick={() => {
+                console.log("Deletar arquivo com ID:", file.id);
+                onDelete(file.id);
+              }}>
                 <TrashIcon className="h-4 w-4" />
               </Button>
             </TableCell>
