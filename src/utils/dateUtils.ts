@@ -10,3 +10,14 @@ export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   return format(date, "d 'de' MMM yyyy 'às' HH:mm", { locale: ptBR });
 };
+
+/**
+ * Gera um nome de arquivo ZIP no formato "dePara-ddMMyyyy-HHmm.zip".
+ * @returns O nome do arquivo ZIP.
+ */
+export const generateZipFilename = (): string => {
+  const now = new Date();
+  const datePart = format(now, 'ddMMyyyy', { locale: ptBR });
+  const timePart = format(now, 'HHmm', { locale: ptBR });
+  return `dePara-${datePart}-${timePart}.zip`;
+};

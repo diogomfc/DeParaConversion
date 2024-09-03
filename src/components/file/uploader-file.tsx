@@ -270,7 +270,7 @@ export default function UploaderFile() {
               Clique ou arraste arquivos aqui para fazer upload
             </p>
             <p className="mt-1 text-xs text-gray-500">
-              Arquivos permitidos: CSV, XLSX, PDF
+              Arquivos permitidos: CSV
             </p>
           </div>
 

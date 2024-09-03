@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { useDeleteFileMutation } from "@/hooks/useDeleteFileMutation";
-import { useDownloadFiles } from "@/hooks/useDownloadFiles";
-import { useFetchFiles } from "@/hooks/useFetchFiles";
-import { Button } from "../ui/button";
-import { TableFile1 } from "./table-file1";
-import { Pagination } from "./pagination";
+import { useState } from 'react';
+import { useFetchFiles } from '@/hooks/useFetchFiles';
+import { useDeleteFileMutation } from '@/hooks/useDeleteFileMutation';
+import { useDownloadFiles } from '@/hooks/useDownloadFiles'; // Hook para download individual
+import { useDownloadZip } from '@/hooks/useDownloadZip'; // Hook para download em ZIP
+import { Button } from '../ui/button';
+import { TableFile } from './table-file';
+import { Pagination } from './pagination';
 
 // Tipo para o arquivo
 export type FileRecord = {
@@ -19,32 +20,36 @@ export type FileRecord = {
 export function TableFileHome() {
   const { data: files = [], isLoading, isError, error } = useFetchFiles();
   const deleteFileMutation = useDeleteFileMutation();
-  const { handleDownload } = useDownloadFiles(files); // Corrigido o uso do hook de download
+  const { handleDownload: handleDownloadZip } = useDownloadZip(files);
+  const { handleDownload: handleDownloadIndividual } = useDownloadFiles(files);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const recordsPerPage = 10;
 
-  // Função de paginação
   const paginate = (items: FileRecord[], page: number, perPage: number) => {
     const offset = (page - 1) * perPage;
     return items.slice(offset, offset + perPage);
   };
+
   const paginatedFiles = paginate(files, currentPage, recordsPerPage);
   const totalPages = Math.ceil(files.length / recordsPerPage);
 
-  // Função para deletar um arquivo
   const handleDelete = (id: string) => {
     deleteFileMutation.mutate(id);
   };
-  // Função para fazer download de arquivos
+
   const handleDownloadFiles = async (ids: string[]) => {
     try {
-      await handleDownload(ids); // Corrigido o uso da função de download
+      if (ids.length === 1) {
+        await handleDownloadIndividual(ids); // Download individual
+      } else if (ids.length > 1) {
+        await handleDownloadZip(ids); // Download em ZIP
+      }
     } catch (error) {
       console.error("Erro ao fazer o download dos arquivos:", error);
     }
   };
-  // Função para selecionar um arquivo
+
   const handleSelectFile = (id: string) => {
     setSelectedFiles((prev) =>
       prev.includes(id)
@@ -52,7 +57,7 @@ export function TableFileHome() {
         : [...prev, id]
     );
   };
-  // Função para selecionar todos os arquivos
+
   const handleSelectAll = () => {
     if (selectedFiles.length === paginatedFiles.length) {
       setSelectedFiles([]);
@@ -77,10 +82,10 @@ export function TableFileHome() {
           onClick={() => handleDownloadFiles(selectedFiles)}
           disabled={selectedFiles.length === 0}
         >
-          Download Selecionados
+          {selectedFiles.length === 1 ? "Download" : "Download Selecionados"}
         </Button>
       </div>
-      <TableFile1
+      <TableFile
         files={paginatedFiles}
         selectedFiles={selectedFiles}
         onSelectFile={handleSelectFile}
