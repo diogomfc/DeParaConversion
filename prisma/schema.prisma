@@ -25,6 +25,7 @@ model DePara {
 
   generationDDL   DDLGeneration?
   generationDDLId Int?
+  CSVData         CSVData[]
 
   @@index([status])
   @@index([generationDDLId])
@@ -48,4 +49,65 @@ model DDLGeneration {
   @@index([fileName])
   @@index([version])
   @@map("ddl_generation")
+}
+
+model CSVData {
+  id      Int      @id @default(autoincrement())
+  niv     String?
+  campo   String?
+  redef   String?
+  gru     String?
+  fmtB    String?
+  pIni    Int?
+  tam     Int?
+  intB    Int?
+  decB    Int?
+  pic     String?
+  usage   String?
+  sinal   String?
+  occDe   Int?
+  occAte  Int?
+  depON   String?
+  pk      String?
+  tpConv  String?
+  padr    String?
+  coluna  String?
+  varhost String?
+  fmtC    String?
+  intC    Int?
+  decC    Int?
+  null    Boolean?
+  excd    Boolean?
+  pfx     String?
+  sfx     String?
+  trunc   Boolean?
+  dup     Boolean?
+  cpoBase String?
+
+  // Relacionamento com a tabela AKData
+  akData AKData[] // Um registro CSVData pode ter múltiplos registros AKData
+
+  dePara   DePara @relation(fields: [deParaId], references: [id], onDelete: Cascade)
+  deParaId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([deParaId])
+  @@map("csv_data")
+}
+
+model AKData {
+  id        Int     @id @default(autoincrement())
+  columnKey String // Nome da coluna AK (ex: "AK1", "AK2", etc.)
+  value     String? // Valor correspondente à coluna AK
+  csvData   CSVData @relation(fields: [csvDataId], references: [id], onDelete: Cascade)
+  csvDataId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([csvDataId])
+  @@index([columnKey])
+  @@map("ak_data")
 }

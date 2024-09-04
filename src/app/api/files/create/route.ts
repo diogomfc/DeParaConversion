@@ -59,12 +59,13 @@ export async function POST(request: Request) {
     for (const file of files) {
       const { arquivoCSV, fileName, description, status } = file;
 
-      // Define o sufixo com base no status
-      const suffix = status === "Atenção" ? "_Lab.csv" : "_Sis.csv";
+      // Define o prefixo e o sufixo com base no status
+        const prefix = status === "Atenção" ? "M" : "A";
+        const suffix = status === "Atenção" ? "_Lab.csv" : "_Sis.csv";
 
-      // Adiciona o sufixo correto ao nome do arquivo
-      const fileNameWithSuffix = `${fileName
-        .replace(/^[A-Z]/, "M") // Altera a primeira letra para "M"
+      // Adiciona o prefixo e sufixo corretos ao nome do arquivo
+      const fileNameWithSuffix = `${prefix}${fileName
+        .replace(/^[A-Z]/, "") // Remove a primeira letra original
         .replace(/\.[^/.]+$/, "")}${suffix}`; // Adiciona o sufixo e mantém a extensão .csv
 
       // Verifica se já existe um registro com o mesmo fileName

@@ -21,3 +21,13 @@ export const generateZipFilename = (): string => {
   const timePart = format(now, 'HHmm', { locale: ptBR });
   return `dePara-${datePart}-${timePart}.zip`;
 };
+
+/**
+ * Formata uma data para o formato "d 'de' MMM 'de' yyyy" em português.
+ * @param date - A data a ser formatada.
+ * @returns A data formatada.
+ */
+export const formatFilterDate = (date: Date): string => {
+  return format(date, "d 'de' MMM 'de' yyyy", { locale: ptBR });
+};
+
