@@ -1,10 +1,11 @@
-"use client";
+'use client'
 
-import NewPageDepara from "./depara/page";
+import NewPageDepara from './depara/page'
 
 export default function Home() {
-  return <>
-    <NewPageDepara />
-  </>
+  return (
+    <>
+      <NewPageDepara />
+    </>
+  )
 }
-

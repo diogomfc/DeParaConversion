@@ -1,12 +1,36 @@
-import Image from "next/image";
-import { Checkbox } from "../ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { AlertCircle, DownloadIcon, Flame, MoreVerticalIcon, PencilIcon, Rocket, TrashIcon } from "lucide-react";
-import { Button } from "../ui/button";
-import { formatDate } from "@/utils/dateUtils";
-import { FileRecord } from ".";
+import {
+  AlertCircle,
+  DownloadIcon,
+  Flame,
+  MoreVerticalIcon,
+  PencilIcon,
+  Rocket,
+  TrashIcon,
+} from 'lucide-react'
+import Image from 'next/image'
 
-export function TableFile({ files, selectedFiles, onSelectFile, onSelectAll, onDelete, onDownload }: any) {
+import { formatDate } from '@/utils/dateUtils'
+
+import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table'
+import { FileRecord } from '.'
+
+export function TableFile({
+  files,
+  selectedFiles,
+  onSelectFile,
+  onSelectAll,
+  onDelete,
+  onDownload,
+}: any) {
   return (
     <Table className="border border-gray-200">
       <TableHeader className="bg-gray-100">
@@ -50,9 +74,9 @@ export function TableFile({ files, selectedFiles, onSelectFile, onSelectAll, onD
             </TableCell>
             <TableCell>
               <div className="flex items-center">
-                {file.status === "Conferido" ? (
+                {file.status === 'Conferido' ? (
                   <Rocket className="mr-2 h-4 w-4 text-green-500" />
-                ) : file.status === "Atenção" ? (
+                ) : file.status === 'Atenção' ? (
                   <AlertCircle className="mr-2 h-4 w-4 text-yellow-500" />
                 ) : null}
                 {file.status}
@@ -66,7 +90,11 @@ export function TableFile({ files, selectedFiles, onSelectFile, onSelectAll, onD
             </TableCell>
             <TableCell>{formatDate(file.createdAt)}</TableCell>
             <TableCell>
-              <Button variant="outline" size="sm" onClick={() => onDownload([file.id])}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onDownload([file.id])}
+              >
                 <DownloadIcon className="h-4 w-4" />
               </Button>
             </TableCell>
@@ -76,10 +104,14 @@ export function TableFile({ files, selectedFiles, onSelectFile, onSelectAll, onD
               </Button>
             </TableCell>
             <TableCell>
-              <Button variant="ghost" size="icon" onClick={() => {
-                console.log("Deletar arquivo com ID:", file.id);
-                onDelete(file.id);
-              }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  console.log('Deletar arquivo com ID:', file.id)
+                  onDelete(file.id)
+                }}
+              >
                 <TrashIcon className="h-4 w-4" />
               </Button>
             </TableCell>
@@ -92,5 +124,5 @@ export function TableFile({ files, selectedFiles, onSelectFile, onSelectAll, onD
         ))}
       </TableBody>
     </Table>
-  );
+  )
 }

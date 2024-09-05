@@ -1,5 +1,6 @@
-import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
+
+import prisma from '@/lib/prisma'
 
 export async function GET(request: Request) {
   try {
@@ -9,17 +10,20 @@ export async function GET(request: Request) {
         id: true,
         fileName: true,
         status: true,
-        createdAt: true,  
+        createdAt: true,
       },
       orderBy: {
-        createdAt: 'desc',  
+        createdAt: 'desc',
       },
-    });
+    })
 
     // Retorna a lista de arquivos
-    return NextResponse.json(files);
+    return NextResponse.json(files)
   } catch (error) {
-    console.error('Erro ao buscar os arquivos:', error);
-    return NextResponse.json({ error: 'Erro ao buscar os arquivos' }, { status: 500 });
+    console.error('Erro ao buscar os arquivos:', error)
+    return NextResponse.json(
+      { error: 'Erro ao buscar os arquivos' },
+      { status: 500 },
+    )
   }
 }

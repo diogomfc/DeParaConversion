@@ -1,27 +1,29 @@
-"use client"
+'use client'
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { XIcon, PlusIcon } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from 'framer-motion'
+import { PlusIcon, XIcon } from 'lucide-react'
+import { useState } from 'react'
+
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
+
 import {
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { ModalItemListFile } from "./modal-item-list-file";
-import { Separator } from "../ui/separator";
-import { useToast } from "@/hooks/use-toast";
+} from '../ui/dialog'
+import { Separator } from '../ui/separator'
+import { ModalItemListFile } from './modal-item-list-file'
 
 interface FileListProps {
-  files: File[];
-  progress: Record<string, number>;
-  onRemoveFile: (index: number) => void;
-  onClearSelection: () => void;
-  onUpload: (file: File) => Promise<void>;
-  isUploading: boolean;
-  openFileDialog: () => void;
+  files: File[]
+  progress: Record<string, number>
+  onRemoveFile: (index: number) => void
+  onClearSelection: () => void
+  onUpload: (file: File) => Promise<void>
+  isUploading: boolean
+  openFileDialog: () => void
 }
 
 export function ModalListFile({
@@ -33,27 +35,29 @@ export function ModalListFile({
   isUploading,
   openFileDialog,
 }: FileListProps) {
-  const [uploadingFileIndex, setUploadingFileIndex] = useState<number | null>(null);
-  const { toast } = useToast(); // Uso do hook useToast
+  const [uploadingFileIndex, setUploadingFileIndex] = useState<number | null>(
+    null,
+  )
+  const { toast } = useToast() // Uso do hook useToast
 
   const handleUpload = async () => {
     for (let i = 0; i < files.length; i++) {
-      setUploadingFileIndex(i);
+      setUploadingFileIndex(i)
       try {
-        await onUpload(files[i]);
-        onRemoveFile(i); // Remove o arquivo da lista após o upload
+        await onUpload(files[i])
+        onRemoveFile(i) // Remove o arquivo da lista após o upload
       } catch (error) {
-        console.error("Erro ao fazer upload do arquivo:", error);
+        console.error('Erro ao fazer upload do arquivo:', error)
       }
     }
-    setUploadingFileIndex(null);
+    setUploadingFileIndex(null)
 
     // Exibir toast após concluir o upload de todos os arquivos
     toast({
-      title: "Upload Concluído",
+      title: 'Upload Concluído',
       description: `${files.length} arquivos foram cadastrados e convertidos com sucesso.`,
-    });
-  };
+    })
+  }
 
   return (
     <DialogContent className="flex flex-col max-h-[80vh]">
@@ -62,7 +66,8 @@ export function ModalListFile({
           <DialogTitle>
             <h1>Arquivos Selecionados</h1>
             <p className="text-sm font-normal text-gray-500">
-              Total de arquivos: <span className="text-blue-900">{files.length}</span>
+              Total de arquivos:{' '}
+              <span className="text-blue-900">{files.length}</span>
             </p>
           </DialogTitle>
 
@@ -103,10 +108,10 @@ export function ModalListFile({
             disabled={files.length === 0 || isUploading}
             onClick={handleUpload}
           >
-            {isUploading ? "Enviando..." : "Iniciar upload"}
+            {isUploading ? 'Enviando...' : 'Iniciar upload'}
           </Button>
         </div>
       </DialogFooter>
     </DialogContent>
-  );
+  )
 }

@@ -1,59 +1,65 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon, CalendarOff } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { ptBR } from 'date-fns/locale';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ptBR } from 'date-fns/locale'
+import { CalendarIcon, CalendarOff } from 'lucide-react'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { formatFilterDate } from '@/utils/dateUtils';
-import { useEffect } from "react";
+} from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
+import { formatFilterDate } from '@/utils/dateUtils'
 
 const FormSchema = z.object({
   selectedDate: z.date().optional(),
-});
+})
 
 interface DateFilterProps {
-  onDateChange: (date: Date | undefined) => void;
-  handleClearFilter: () => void;
-  searchTerm: string; // Recebe o searchTerm para monitorar mudanças
+  onDateChange: (date: Date | undefined) => void
+  handleClearFilter: () => void
+  searchTerm: string // Recebe o searchTerm para monitorar mudanças
+  placeholderDateFilter?: string
 }
 
-export function DateFilter({ onDateChange, handleClearFilter, searchTerm }: DateFilterProps) {
+export function DateFilter({
+  onDateChange,
+  handleClearFilter,
+  searchTerm,
+  placeholderDateFilter,
+}: DateFilterProps) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-  });
+  })
 
   // Resetar o campo de data quando o termo de busca for alterado
   useEffect(() => {
     if (searchTerm) {
-      form.reset(); // Limpa o campo de data
+      form.reset() // Limpa o campo de data
     }
-  }, [searchTerm, form]);
+  }, [searchTerm, form])
 
   const handleDateChange = (date: Date | undefined) => {
-    form.setValue('selectedDate', date);
-    onDateChange(date);
-  };
+    form.setValue('selectedDate', date)
+    onDateChange(date)
+  }
 
   const handleClear = (e: React.MouseEvent) => {
-    e.preventDefault();
-    form.reset();
-    handleClearFilter();
-  };
+    e.preventDefault()
+    form.reset()
+    handleClearFilter()
+  }
 
   return (
     <Form {...form}>
@@ -67,14 +73,16 @@ export function DateFilter({ onDateChange, handleClearFilter, searchTerm }: Date
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant={"outline"}
+                      variant={'outline'}
                       className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
+                        'w-[240px] pl-3 text-left font-normal',
+                        !field.value && 'text-muted-foreground',
                       )}
                     >
                       <span>
-                        {field.value ? formatFilterDate(field.value) : 'Selecione uma data'}
+                        {field.value
+                          ? formatFilterDate(field.value)
+                          : placeholderDateFilter}
                       </span>
                       {field.value ? (
                         // Se houver uma data selecionada, mostra o ícone de limpar
@@ -108,5 +116,5 @@ export function DateFilter({ onDateChange, handleClearFilter, searchTerm }: Date
         />
       </form>
     </Form>
-  );
+  )
 }
