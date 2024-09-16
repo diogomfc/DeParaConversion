@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   AlertCircle,
   DownloadIcon,
@@ -6,11 +7,13 @@ import {
   PencilIcon,
   Rocket,
   TrashIcon,
+  TriangleAlert,
 } from 'lucide-react'
 import Image from 'next/image'
 
 import { formatDate } from '@/utils/dateUtils'
 
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import {
@@ -42,8 +45,13 @@ export function TableFile({
             />
           </TableHead>
           <TableHead>Nome</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Prioridade</TableHead>
+          <TableHead>
+            <div className="flex items-center justify-center">Status</div>
+          </TableHead>
+          <TableHead className="">
+            <div className=" flex items-center justify-center">Prioridade</div>
+          </TableHead>
+          <TableHead>Criado por</TableHead>
           <TableHead>Criado em</TableHead>
           <TableHead className="w-[50px]"></TableHead>
           <TableHead className="w-[50px]"></TableHead>
@@ -73,22 +81,61 @@ export function TableFile({
               </div>
             </TableCell>
             <TableCell>
-              <div className="flex items-center">
-                {file.status === 'Conferido' ? (
+              <div className="flex items-center justify-center">
+                {/* {file.status === 'Conferido' ? (
                   <Rocket className="mr-2 h-4 w-4 text-green-500" />
                 ) : file.status === 'Atenção' ? (
                   <AlertCircle className="mr-2 h-4 w-4 text-yellow-500" />
+                ) : null}
+                {file.status} */}
+
+                {file.status === 'Conferido' ? (
+                  <Rocket className="mr-2 h-4 w-4 text-green-500" />
+                ) : file.status === 'Conferido-Multi' ? (
+                  <Rocket className="mr-2 h-4 w-4 text-blue-500" />
+                ) : file.status === 'Atenção' ? (
+                  <AlertCircle className="mr-2 h-4 w-4 text-yellow-500" />
+                ) : file.status === 'Atenção-Multi' ? (
+                  <AlertCircle className="mr-2 h-4 w-4 text-orange-500" />
+                ) : file.status === 'Atenção-PK' ? (
+                  <AlertCircle className="mr-2 h-4 w-4 text-red-500" />
+                ) : file.status === 'Atenção-Sobreposição' ? (
+                  <TriangleAlert className="mr-2 h-4 w-4 text-purple-500" />
                 ) : null}
                 {file.status}
               </div>
             </TableCell>
             <TableCell>
-              <div className="flex items-center">
-                <Flame className="mr-2 h-4 w-4" />
-                {file.prioridade}
+              <div className="flex items-center justify-center">
+                <Flame className="mr-2 h-4 w-4 text-red-400" />
+                {/* {file.prioridade} */}
+                Alta
               </div>
             </TableCell>
+
+            <TableCell>
+              <div className="flex gap-3 items-center">
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Avatar className="h-8 w-8 border">
+                    <AvatarImage
+                      src={`https://github.com/`}
+                      alt="Avatar"
+                      className="h-full w-full rounded-full object-cover"
+                    />
+                    <AvatarFallback>DS</AvatarFallback>
+                  </Avatar>
+                </Button>
+                <div className="flex flex-col">
+                  <div className="font-normal">Diogo Silva</div>
+                  <div className="text-xs text-muted-foreground">
+                    diogo.silva@eccox.com.br
+                  </div>
+                </div>
+              </div>
+            </TableCell>
+
             <TableCell>{formatDate(file.createdAt)}</TableCell>
+
             <TableCell>
               <Button
                 variant="outline"

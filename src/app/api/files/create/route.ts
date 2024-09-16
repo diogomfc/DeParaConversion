@@ -17,14 +17,29 @@ export async function POST(request: Request) {
     for (const file of files) {
       const { arquivoCSV, fileName, description, status } = file
 
-      // Define o prefixo e o sufixo com base no status
-      const prefix = status === 'Atenção' ? 'M' : 'A'
-      const suffix = status === 'Atenção' ? '_Lab.csv' : '_Sis.csv'
+      const prefix =
+        status === 'Atenção' ||
+        status === 'Atenção-Multi' ||
+        status === 'Atenção-PK' ||
+        status === 'Atenção-Sobreposição'
+          ? 'M'
+          : 'A' // O prefixo será 'M' para os status de Atenção, e 'A' para os demais
+
+      const suffix =
+        status === 'Atenção-Multi'
+          ? '+LabMulti'
+          : status === 'Atenção-PK'
+            ? '+LabPK'
+            : status === 'Atenção-Sobreposição'
+              ? '+LabSobrePosição'
+              : status === 'Atenção'
+                ? '+Lab'
+                : '+Conf' // Personalizando o sufixo para os casos específicos de Atenção-Multi, Atenção-PK e Atenção-Sobreposição
 
       // Adiciona o prefixo e sufixo corretos ao nome do arquivo
       const fileNameWithSuffix = `${prefix}${fileName
         .replace(/^[A-Z]/, '') // Remove a primeira letra original
-        .replace(/\.[^/.]+$/, '')}${suffix}` // Adiciona o sufixo e mantém a extensão .csv
+        .replace(/\.[^/.]+$/, '')}${suffix}.csv` // Adiciona o sufixo e mantém a extensão .csv
 
       // Verifica se já existe um registro com o mesmo fileName
       const existingRecord = await prisma.dePara.findFirst({

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
@@ -27,6 +28,7 @@ export default function UploaderFile() {
   const [isUploading, setIsUploading] = useState(false)
 
   const queryClient = useQueryClient()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [uploadComplete, setUploadComplete] = useState(false)
 
   // TODO:v1 Função para processar o CSV com async/await
@@ -80,6 +82,163 @@ export default function UploaderFile() {
     },
   })
 
+  // TODO:v1 funcional
+  // const processCSV = async (
+  //   data: DataRow[],
+  // ): Promise<{
+  //   processedData: DataRow[]
+  //   tamTotalDCL: number
+  //   sumTamC: number
+  //   status: string
+  // }> => {
+  //   let nivValorPK = ''
+  //   let tamTotalDCL = 0
+  //   let sumTamC = 0
+
+  //   data.forEach((row) => {
+  //     if (row.TpConv !== 'DCL') {
+  //       row.TpConv = '' // Limpa o valor se não for "DCL"
+  //     }
+  //   })
+
+  //   // Loop único para processar dados e calcular tamTotalDCL
+  //   data.forEach((row) => {
+  //     if (row.PK === 'PK') {
+  //       nivValorPK = row.Niv
+  //     }
+
+  //     if (row.TpConv === 'DCL') {
+  //       tamTotalDCL += parseFloat(row.Tam) || 0
+  //     }
+  //   })
+
+  //   // Loop para atualizar TpConv e calcular sumTamC
+  //   data.forEach((row) => {
+  //     if (row.Niv === '#') {
+  //       row.TpConv = ''
+  //     } else if (row.Niv === '') {
+  //       row.TpConv = '' // Não preenche se Niv estiver
+  //     } else if (row.Gru === 'G' && row.Redef) {
+  //       row.TpConv = 'N'
+  //     } else if (row.Niv === nivValorPK && row.TpConv !== 'N') {
+  //       row.TpConv = 'C'
+  //     } else if (row.TpConv === '') {
+  //       row.TpConv = 'N'
+  //     }
+
+  //     // Calcular a soma de Tam para "C"
+  //     if (row.TpConv === 'C') {
+  //       sumTamC += parseFloat(row.Tam) || 0
+  //     }
+  //   })
+
+  //   // Determinar o status com base em tamTotalDCL e sumTamC
+  //   const status = tamTotalDCL !== sumTamC ? 'Atenção' : 'Conferido'
+
+  //   return { processedData: data, tamTotalDCL, sumTamC, status }
+  // }
+
+  // TODO:v2 Função para verificar multi-layouts niv 1
+  // const processCSV = async (
+  //   data: DataRow[],
+  // ): Promise<{
+  //   processedData: DataRow[]
+  //   tamTotalDCL: number
+  //   sumTamC: number
+  //   status: string
+  // }> => {
+  //   let nivValorPK = ''
+  //   let tamTotalDCL = 0
+  //   let sumTamC = 0
+  //   let pkFound = false // Variável para verificar se algum valor PK foi encontrado
+
+  //   // Primeiro loop: Contar quantos "Niv = 1" existem e limpar o TpConv se não for "DCL"
+  //   let nivCount1 = 0
+
+  //   data.forEach((row) => {
+  //     if (row.TpConv !== 'DCL') {
+  //       row.TpConv = '' // Limpa o valor se não for "DCL"
+  //     }
+
+  //     if (row.Niv === '1') {
+  //       nivCount1 += 1
+  //     }
+  //   })
+
+  //   // Verificar se existem dois "Niv = 1" e marcar o índice do segundo
+  //   let secondNiv1Index = -1
+  //   if (nivCount1 >= 2) {
+  //     let count = 0
+  //     data.forEach((row, index) => {
+  //       if (row.Niv === '1') {
+  //         count += 1
+  //         if (count === 2) {
+  //           secondNiv1Index = index
+  //         }
+  //       }
+  //     })
+  //   }
+
+  //   // Segundo loop: Processar os dados e calcular tamTotalDCL
+  //   data.forEach((row) => {
+  //     if (row.PK === 'PK') {
+  //       nivValorPK = row.Niv
+  //       pkFound = true // Indica que o valor PK foi encontrado
+  //     }
+
+  //     if (row.TpConv === 'DCL') {
+  //       tamTotalDCL += parseFloat(row.Tam) || 0
+  //     }
+  //   })
+
+  //   // Terceiro loop: Atualizar TpConv, calcular sumTamC e aplicar a regra especial a partir do segundo "Niv = 1"
+  //   data.forEach((row, index) => {
+  //     if (secondNiv1Index !== -1 && index >= secondNiv1Index) {
+  //       // Se estivermos após o segundo "Niv = 1", TpConv será 'N' e ignoraremos outras regras
+  //       row.TpConv = 'N'
+  //       return // Ignora as outras condições
+  //     }
+
+  //     // Regras normais para as linhas antes do segundo "Niv = 1"
+  //     if (row.Niv === '#') {
+  //       row.TpConv = ''
+  //     } else if (row.Niv === '') {
+  //       row.TpConv = '' // Não preenche se Niv estiver vazio
+  //     } else if (row.Gru === 'G' && row.Redef) {
+  //       row.TpConv = 'N'
+  //     } else if (row.Niv === nivValorPK && row.TpConv !== 'N') {
+  //       row.TpConv = 'C'
+  //     } else if (row.TpConv === '') {
+  //       row.TpConv = 'N'
+  //     }
+
+  //     // Calcular a soma de Tam para "C"
+  //     if (row.TpConv === 'C') {
+  //       sumTamC += parseFloat(row.Tam) || 0
+  //     }
+  //   })
+
+  //   // Determinar o status com base nas novas condições
+  //   let status = 'Atenção'
+
+  //   if (!pkFound) {
+  //     // Se nenhum valor "PK" foi encontrado, o status será "Atenção-PK"
+  //     status = 'Atenção-PK'
+  //   } else if (nivCount1 >= 2) {
+  //     // Se houver dois Niv = 1, temos duas condições:
+  //     if (tamTotalDCL === sumTamC) {
+  //       status = 'Conferido-Multi' // Se tamTotalDCL for igual a sumTamC
+  //     } else {
+  //       status = 'Atenção-Multi' // Se tamTotalDCL for diferente de sumTamC
+  //     }
+  //   } else if (tamTotalDCL === sumTamC) {
+  //     status = 'Conferido' // Caso normal onde tamTotalDCL é igual a sumTamC
+  //   }
+
+  //   return { processedData: data, tamTotalDCL, sumTamC, status }
+  // }
+
+  // TODO:V3 - Função para verificar sobreposição de layouts
   const processCSV = async (
     data: DataRow[],
   ): Promise<{
@@ -91,17 +250,54 @@ export default function UploaderFile() {
     let nivValorPK = ''
     let tamTotalDCL = 0
     let sumTamC = 0
+    let pkFound = false // Variável para verificar se algum valor PK foi encontrado
+    let overlapDetected = false // Verificar se há sobreposição
+
+    // Primeiro loop: Contar quantos "Niv = 1" existem e limpar o TpConv se não for "DCL"
+    let nivCount1 = 0
 
     data.forEach((row) => {
       if (row.TpConv !== 'DCL') {
         row.TpConv = '' // Limpa o valor se não for "DCL"
       }
+
+      if (row.Niv === '1') {
+        nivCount1 += 1
+      }
     })
 
-    // Loop único para processar dados e calcular tamTotalDCL
-    data.forEach((row) => {
+    // Verificar se existem dois "Niv = 1" e marcar o índice do segundo
+    let secondNiv1Index = -1
+    if (nivCount1 >= 2) {
+      let count = 0
+      data.forEach((row, index) => {
+        if (row.Niv === '1') {
+          count += 1
+          if (count === 2) {
+            secondNiv1Index = index
+          }
+        }
+      })
+    }
+
+    // Segundo loop: Processar os dados e calcular tamTotalDCL
+    data.forEach((row, index) => {
       if (row.PK === 'PK') {
         nivValorPK = row.Niv
+        pkFound = true // Indica que o valor PK foi encontrado
+
+        // Verificar se a linha de elementos "E" logo abaixo contém sobreposição com as colunas AK
+        for (let i = index + 1; i < data.length; i++) {
+          const nextRow = data[i]
+          if (nextRow.PK === 'E') {
+            // Verifica se a coluna AK tem sobreposição com elementos "E"
+            if (nextRow.AK && nextRow.PK === 'E') {
+              overlapDetected = true
+            }
+          } else {
+            break // Parar quando a sequência de elementos "E" acabar
+          }
+        }
       }
 
       if (row.TpConv === 'DCL') {
@@ -109,12 +305,19 @@ export default function UploaderFile() {
       }
     })
 
-    // Loop para atualizar TpConv e calcular sumTamC
-    data.forEach((row) => {
+    // Terceiro loop: Atualizar TpConv, calcular sumTamC e aplicar a regra especial a partir do segundo "Niv = 1"
+    data.forEach((row, index) => {
+      if (secondNiv1Index !== -1 && index >= secondNiv1Index) {
+        // Se estivermos após o segundo "Niv = 1", TpConv será 'N' e ignoraremos outras regras
+        row.TpConv = 'N'
+        return // Ignora as outras condições
+      }
+
+      // Regras normais para as linhas antes do segundo "Niv = 1"
       if (row.Niv === '#') {
         row.TpConv = ''
       } else if (row.Niv === '') {
-        row.TpConv = '' // Não preenche se Niv estiver
+        row.TpConv = '' // Não preenche se Niv estiver vazio
       } else if (row.Gru === 'G' && row.Redef) {
         row.TpConv = 'N'
       } else if (row.Niv === nivValorPK && row.TpConv !== 'N') {
@@ -129,205 +332,28 @@ export default function UploaderFile() {
       }
     })
 
-    // Determinar o status com base em tamTotalDCL e sumTamC
-    const status = tamTotalDCL !== sumTamC ? 'Atenção' : 'Conferido'
+    // Determinar o status com base nas novas condições
+    let status = 'Atenção'
+
+    if (overlapDetected) {
+      // Se for detectada sobreposição, o status será "Atenção-Sobreposição"
+      status = 'Atenção-Sobreposição'
+    } else if (!pkFound) {
+      // Se nenhum valor "PK" foi encontrado, o status será "Atenção-PK"
+      status = 'Atenção-PK'
+    } else if (nivCount1 >= 2) {
+      // Se houver dois Niv = 1, temos duas condições:
+      if (tamTotalDCL === sumTamC) {
+        status = 'Conferido-Multi' // Se tamTotalDCL for igual a sumTamC
+      } else {
+        status = 'Atenção-Multi' // Se tamTotalDCL for diferente de sumTamC
+      }
+    } else if (tamTotalDCL === sumTamC) {
+      status = 'Conferido' // Caso normal onde tamTotalDCL é igual a sumTamC
+    }
 
     return { processedData: data, tamTotalDCL, sumTamC, status }
   }
-
-  // TODO:v2 Função para processar o CSV e preencher o campo TpConv
-  // Função para processar o CSV e preencher o campo TpConv
-  // const processCSV = async (data: DataRow[]): Promise<{ processedData: DataRow[], tamTotalDCL: number, sumTamC: number, status: string }> => {
-  //   let nivValorPK = "";
-  //   let tamTotalDCL = 0;
-  //   let sumTamC = 0;
-  //   let markNForE = false;  // Variável para marcar elementos E como "N"
-
-  //   // Primeiro loop para determinar nivValorPK e calcular tamTotalDCL
-  //   data.forEach((row) => {
-  //     if (row.PK === "PK") {
-  //       nivValorPK = row.Niv;
-  //       markNForE = true;  // Ativa a marcação "N" para próximos "E"
-  //     }
-
-  //     if (row.TpConv === "DCL") {
-  //       tamTotalDCL += parseFloat(row.Tam) || 0;
-  //     }
-  //   });
-
-  //   // Limpar os valores existentes em TpConv, exceto se for "DCL"
-  //   data.forEach((row) => {
-  //     if (row.TpConv !== "DCL") {
-  //       row.TpConv = "";  // Limpa o valor se não for "DCL"
-  //     }
-  //   });
-
-  //   // Segundo loop para preencher TpConv e calcular sumTamC
-  //   data.forEach((row) => {
-  //     if (row.Niv === "#") {
-  //       row.TpConv = ""; // Deixa a célula em branco se Niv for "#"
-  //     } else if (row.Niv === "") {
-  //       row.TpConv = ""; // Não preenche se Niv estiver vazio (final da tabela)
-  //     } else if (row.Gru === "G" && row.Redef) {
-  //       if (row.PK === "PK") {
-  //         row.TpConv = "C";
-  //         markNForE = true;  // Ativa a marcação "N" para próximos "E"
-  //       } else if (row.TpConv !== "DCL" && !markNForE) {
-  //         row.TpConv = "N";
-  //       }
-  //     } else if (row.Niv === nivValorPK && row.TpConv !== "N") {
-  //       row.TpConv = "C";
-  //     }
-
-  //     // Aplica "N" para os elementos "E" se necessário
-  //     if (markNForE && row.PK === "E") {
-  //       row.TpConv = "N";
-  //     }
-
-  //     // Calcular a soma de Tam para "C"
-  //     if (row.TpConv === "C") {
-  //       sumTamC += parseFloat(row.Tam) || 0;
-  //     }
-  //   });
-
-  //   // Comparar tamTotalDCL e sumTamC para determinar o status
-  //   const status = tamTotalDCL !== sumTamC ? "Atenção" : "Conferido";
-
-  //   return { processedData: data, tamTotalDCL, sumTamC, status };
-  // };
-
-  // TODO: v3
-  // const mutation = useMutation({
-  //   mutationFn: async (file: File) => {
-  //     // Parse CSV e obter as colunas
-  //     const parsedData = await new Promise<DataRow[]>((resolve, reject) => {
-  //       Papa.parse<DataRow>(file, {
-  //         header: true,
-  //         complete: (result) => resolve(result.data),
-  //         error: (error) => reject(error),
-  //       });
-  //     });
-
-  //     // Identificar todas as colunas do CSV (incluindo as dinâmicas AK/AN)
-  //     const allColumns = new Set<string>([
-  //       'PK', 'Niv', 'TpConv', 'Gru', 'Redef', 'Tam',
-  //       // Adicione outras colunas estáticas aqui se necessário
-  //       ...Object.keys(parsedData[0] || {}), // Inclui todas as colunas do CSV
-  //     ]);
-
-  //     // Processar os dados CSV e obter o status
-  //     const { processedData, status } = await processCSV(parsedData, allColumns);
-
-  //     // Fazer o upload dos dados e salvar no banco de dados
-  //     const response = await axios.post("/api/files/create", {
-  //       files: [{
-  //         arquivoCSV: processedData,
-  //         fileName: file.name,
-  //         description: 'Descrição opcional',
-  //         status
-  //       }]
-  //     });
-
-  //     if (response.status !== 200) {
-  //       throw new Error("Erro ao salvar os dados.");
-  //     }
-
-  //     return response.data;
-  //   },
-  //   onMutate: (file) => {
-  //     setProgress((prev) => ({ ...prev, [file.name]: 0 }));
-  //     setIsUploading(true);
-  //   },
-  //   onSuccess: (data, file) => {
-  //     setProgress((prev) => ({ ...prev, [file.name]: 100 }));
-  //   },
-  //   onError: () => {
-  //     setIsUploading(false);
-  //   },
-  //   onSettled: () => {
-  //     // Se todos os arquivos foram processados
-  //     if (files.length === 0) {
-  //       setIsUploading(false);
-  //       setUploadComplete(true);
-  //     }
-  //   },
-  // });
-
-  // const processCSV = async (data: DataRow[], allColumns: Set<string>): Promise<{ processedData: DataRow[], tamTotalDCL: number, sumTamC: number, status: string }> => {
-  //   let nivValorPK = "";
-  //   let tamTotalDCL = 0;
-  //   let sumTamC = 0;
-
-  //   // Conjunto para marcar os índices das linhas que devem ser preenchidas com "N"
-  //   const markRowsE = new Set<number>();
-  //   let markE = false; // Variável para saber se deve marcar linhas `E` como "N"
-
-  //   // Primeiro loop para determinar nivValorPK, calcular tamTotalDCL e marcar índices para linhas `E`
-  //   data.forEach((row, index) => {
-  //     // Marcar se encontrarmos valores `AU`, `AN`, ou `AK` em qualquer coluna
-  //     if (row.PK === "PK") {
-  //       nivValorPK = row.Niv;
-  //       markE = true; // Ativa a marcação para linhas `E` após encontrar `PK`
-  //     } else {
-  //       // Verificar se algum valor em qualquer coluna é "AU", "AN", ou "AK"
-  //       for (const key of Object.keys(row)) {
-  //         if (["AU", "AN", "AK"].includes(row[key as keyof DataRow])) {
-  //           markE = true; // Ativa a marcação para linhas `E`
-  //           break;
-  //         }
-  //       }
-  //     }
-
-  //     if (row.TpConv === "DCL") {
-  //       tamTotalDCL += parseFloat(row.Tam) || 0;
-  //     }
-
-  //     // Se a marcação está ativada, adicione o índice da linha `E` ao conjunto
-  //     if (markE && row.PK === "E") {
-  //       markRowsE.add(index);
-  //     }
-  //   });
-
-  //   // Limpar os valores existentes em TpConv, exceto se for "DCL"
-  //   data.forEach((row) => {
-  //     if (row.TpConv !== "DCL") {
-  //       row.TpConv = "";  // Limpa o valor se não for "DCL"
-  //     }
-  //   });
-
-  //   // Segundo loop para preencher TpConv e calcular sumTamC
-  //   data.forEach((row, index) => {
-  //     if (row.Niv === "#") {
-  //       row.TpConv = ""; // Deixa a célula em branco se Niv for "#"
-  //     } else if (row.Niv === "") {
-  //       row.TpConv = ""; // Não preenche se Niv estiver vazio (final da tabela)
-  //     } else if (row.Gru === "G" && row.Redef) {
-  //       if (row.PK === "PK") {
-  //         row.TpConv = "C";
-  //         markE = true; // Ativa a marcação para linhas `E` após encontrar `PK`
-  //       } else if (row.TpConv !== "DCL" && markE) {
-  //         row.TpConv = "N";
-  //       }
-  //     } else if (row.Niv === nivValorPK && row.TpConv !== "N") {
-  //       row.TpConv = "C";
-  //     }
-
-  //     // Aplica "N" para os elementos "E" se o índice estiver no conjunto
-  //     if (markRowsE.has(index)) {
-  //       row.TpConv = "N";
-  //     }
-
-  //     // Calcular a soma de Tam para "C"
-  //     if (row.TpConv === "C") {
-  //       sumTamC += parseFloat(row.Tam) || 0;
-  //     }
-  //   });
-
-  //   // Comparar tamTotalDCL e sumTamC para determinar o status
-  //   const status = tamTotalDCL !== sumTamC ? "Atenção" : "Conferido";
-
-  //   return { processedData: data, tamTotalDCL, sumTamC, status };
-  // };
 
   const onDrop = (acceptedFiles: File[]) => {
     setFiles((prevFiles) => {

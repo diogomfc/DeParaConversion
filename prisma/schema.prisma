@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,7 +22,8 @@ model DePara {
 
   generationDDL   DDLGeneration?
   generationDDLId Int?
-  CSVData         CSVData[]
+  User            User?          @relation(fields: [userId], references: [id])
+  userId          Int?
 
   @@index([status])
   @@index([generationDDLId])
@@ -44,6 +42,8 @@ model DDLGeneration {
 
   dePara   DePara @relation(fields: [deParaId], references: [id], onDelete: Cascade)
   deParaId Int    @unique
+  User     User?  @relation(fields: [userId], references: [id])
+  userId   Int?
 
   @@index([deParaId])
   @@index([fileName])
@@ -51,63 +51,49 @@ model DDLGeneration {
   @@map("ddl_generation")
 }
 
-model CSVData {
-  id      Int      @id @default(autoincrement())
-  niv     String?
-  campo   String?
-  redef   String?
-  gru     String?
-  fmtB    String?
-  pIni    Int?
-  tam     Int?
-  intB    Int?
-  decB    Int?
-  pic     String?
-  usage   String?
-  sinal   String?
-  occDe   Int?
-  occAte  Int?
-  depON   String?
-  pk      String?
-  tpConv  String?
-  padr    String?
-  coluna  String?
-  varhost String?
-  fmtC    String?
-  intC    Int?
-  decC    Int?
-  null    Boolean?
-  excd    Boolean?
-  pfx     String?
-  sfx     String?
-  trunc   Boolean?
-  dup     Boolean?
-  cpoBase String?
+// Models for NextAuth.js
 
-  // Relacionamento com a tabela AKData
-  akData AKData[] // Um registro CSVData pode ter múltiplos registros AKData
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  password      String // Armazena a senha do usuário
 
-  dePara   DePara @relation(fields: [deParaId], references: [id], onDelete: Cascade)
-  deParaId Int
+  accounts Account[]
+  sessions Session[]
+
+  deParas        DePara[]
+  DDLGenerations DDLGeneration[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([deParaId])
-  @@map("csv_data")
 }
 
-model AKData {
-  id        Int     @id @default(autoincrement())
-  columnKey String // Nome da coluna AK (ex: "AK1", "AK2", etc.)
-  value     String? // Valor correspondente à coluna AK
-  csvData   CSVData @relation(fields: [csvDataId], references: [id], onDelete: Cascade)
-  csvDataId Int
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? // Optional fields for OAuth
+  access_token      String? // Optional fields for OAuth
+  expires_at        Int? // Optional fields for OAuth
+  token_type        String? // Optional fields for OAuth
+  scope             String? // Optional fields for OAuth
+  id_token          String? // Optional fields for OAuth
+  session_state     String? // Optional fields for OAuth
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([csvDataId])
-  @@index([columnKey])
-  @@map("ak_data")
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -24,7 +24,8 @@ export function Header() {
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8 border">
                   <AvatarImage
-                    src={`https://api.dicebear.com/6.x/avataaars/svg?seed=${Math.random()}`}
+                    src={`https://github.com/`}
+                    // src={`https://api.dicebear.com/6.x/avataaars/svg?seed=${Math.random()}`}
                     alt="Avatar"
                     className="h-full w-full rounded-full object-cover"
                   />

@@ -97,7 +97,7 @@ export async function GET(
 
       const csv = parse(completeData, { fields: columnOrder, delimiter: ';' })
 
-      zip.file(`${record.fileName ?? 'download'}.csv`, csv)
+      zip.file(`${record.fileName ?? 'download'}`, csv)
     }
 
     const blob = await zip.generateAsync({ type: 'blob' })
